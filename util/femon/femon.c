@@ -90,7 +90,7 @@ int check_frontend (struct dvbfe_handle *fe, int human_readable, unsigned int co
 
 	do {
 		if (dvbfe_get_info(fe, FE_STATUS_PARAMS, &fe_info, DVBFE_INFO_QUERYTYPE_IMMEDIATE, 0) != FE_STATUS_PARAMS) {
-			fprintf(stderr, "Problem retrieving frontend information: %m\n");
+			//fprintf(stderr, "Problem retrieving frontend information: %m\n");
 		}
 
 
