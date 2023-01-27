@@ -222,6 +222,25 @@ void dvbfe_close(struct dvbfe_handle *fehandle)
 	free(fehandle);
 }
 
+int getSNR(fehandle->fd) {
+	struct dtv_property p[] = {
+		{.cmd = DTV_STAT_CNR}
+	};
+
+   	struct dtv_properties cmdseq = {
+		.num = sizeof(p) / sizeof(p[0]),
+		.props = p
+	};
+	
+	int ret = ioctl(fefd, FE_GET_PROPERTY, &cmdseq);
+	if (ret == -1) {
+		printf("Failed to get Carrier Info! Error: %d[%s]\n", errno, strerror(errno));
+		return 0;
+	}
+	
+	return cmdseq.props[0].u.st.stat[0].svalue;
+}
+
 extern int dvbfe_get_info(struct dvbfe_handle *fehandle,
 			  enum dvbfe_info_mask querymask,
 			  struct dvbfe_info *result,
@@ -336,8 +355,11 @@ extern int dvbfe_get_info(struct dvbfe_handle *fehandle,
 			returnval |= DVBFE_INFO_SIGNAL_STRENGTH;
 	}
 	if (querymask & DVBFE_INFO_SNR) {
-		if (!ioctl(fehandle->fd, FE_READ_SNR, &result->snr))
+		result->snr = getSNR(fehandle->fd);
+		if(!result->snr)
 			returnval |= DVBFE_INFO_SNR;
+		//if (!ioctl(fehandle->fd, FE_READ_SNR, &result->snr))
+		//	returnval |= DVBFE_INFO_SNR;
 	}
 	if (querymask & DVBFE_INFO_UNCORRECTED_BLOCKS) {
 		if (!ioctl(fehandle->fd, FE_READ_UNCORRECTED_BLOCKS, &result->ucblocks))
