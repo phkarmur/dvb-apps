@@ -222,7 +222,7 @@ void dvbfe_close(struct dvbfe_handle *fehandle)
 	free(fehandle);
 }
 
-int getSNR(fehandle->fd) {
+int getSNR(int fefd) {
 	struct dtv_property p[] = {
 		{.cmd = DTV_STAT_CNR}
 	};
