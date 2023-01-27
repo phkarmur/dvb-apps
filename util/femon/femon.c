@@ -96,18 +96,18 @@ int check_frontend (struct dvbfe_handle *fe, int human_readable, unsigned int co
 
 
 		if (human_readable) {
-                       printf ("status %c%c%c%c%c | signal %3u%% | snr %3u%% | ber %d | unc %d | ",
+                       printf ("status %c%c%c%c%c | signal %3u%% | snr %.2f | ber %.3f | unc %d | ",
 				fe_info.signal ? 'S' : ' ',
 				fe_info.carrier ? 'C' : ' ',
 				fe_info.viterbi ? 'V' : ' ',
 				fe_info.sync ? 'Y' : ' ',
 				fe_info.lock ? 'L' : ' ',
 				(fe_info.signal_strength * 100) / 0xffff,
-				(fe_info.snr * 100) / 0xffff,
-				fe_info.ber,
+				fe_info.snr / 1000.0, //(fe_info.snr * 100) / 0xffff,
+				fe_info.ber / 1000.0,
 				fe_info.ucblocks);
 		} else {
-			printf ("status %c%c%c%c%c | signal %04x | snr %04x | ber %08x | unc %08x | ",
+			printf ("status %c%c%c%c%c | signal %04d | snr %04d | ber %08d | unc %08d | ",
 				fe_info.signal ? 'S' : ' ',
 				fe_info.carrier ? 'C' : ' ',
 				fe_info.viterbi ? 'V' : ' ',
