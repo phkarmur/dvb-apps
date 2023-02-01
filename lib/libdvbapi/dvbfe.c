@@ -355,11 +355,22 @@ extern int dvbfe_get_info(struct dvbfe_handle *fehandle,
 			returnval |= DVBFE_INFO_SIGNAL_STRENGTH;
 	}
 	if (querymask & DVBFE_INFO_SNR) {
+		int test_snr;
+                ioctl(fehandle->fd, FE_READ_SNR, &test_snr);
+
 		result->snr = getSNR(fehandle->fd);
-		if(!result->snr)
-			returnval |= DVBFE_INFO_SNR;
-		//if (!ioctl(fehandle->fd, FE_READ_SNR, &result->snr))
-		//	returnval |= DVBFE_INFO_SNR;
+		if(!result->snr){
+			if (!ioctl(fehandle->fd, FE_READ_SNR, &test_snr)){
+				sleep(1);
+				ioctl(fehandle->fd, FE_READ_SNR, &test_snr);
+				returnval |= DVBFE_INFO_SNR;
+			}
+			
+			result->snr = getSNR(fehandle->fd);
+			if(result->snr == 0){
+				returnval |= DVBFE_INFO_SNR;	
+			}
+		}
 	}
 	if (querymask & DVBFE_INFO_UNCORRECTED_BLOCKS) {
 		if (!ioctl(fehandle->fd, FE_READ_UNCORRECTED_BLOCKS, &result->ucblocks))
